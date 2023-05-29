@@ -83,14 +83,13 @@ svg.on("click", function(event) {
   texto = prompt("Idea?");
   var newItem = {name: texto, x: point[0], y: point[1]};
 
-  // TODO Pendiente await y async ... y poder buscar en la base de datos para no insertar duplicados
-  key = db.nodos.put(newItem).then(id => {
-      // alert("Se agregó el nodo con id: " + id);
-  });      
+  // Busqueda basica de duplicados por nombre
+  db.nodos.get({"name":texto}).then( function(nodos) {
+    if (nodos === undefined) {
+      key = db.nodos.put(newItem).then(id => {
 
-  if (!exist) {
-    // Creamos el nuevo nodo como un círculo
-    newNode.append("circle")
+      // Creamos el nuevo nodo como un círculo
+      newNode.append("circle")
       .attr("cx", point[0])
       .attr("cy", point[1])
       .attr("r", 20)
@@ -102,21 +101,27 @@ svg.on("click", function(event) {
           createLink(event,this);
         }});
 
-    // Agregamos una etiqueta de texto al nodo
-    // en la posicion relativa del nodo
-    newNode.append("text")
-      .attr('x',  point[0]+20)
-      .attr('y',  point[1]+20)
-      .text(texto)
-      .clone(true).lower()
-      .attr('fill', 'none')
-      .attr('stroke', 'white')
-      .attr('stroke-width', 3);
+      // Agregamos una etiqueta de texto al nodo
+      // en la posicion relativa del nodo
+      newNode.append("text")
+        .attr('x',  point[0]+20)
+        .attr('y',  point[1]+20)
+        .text(texto)
+        .clone(true).lower()
+        .attr('fill', 'none')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 3);
 
-      const newNodeRef = { id: key.id, name: texto, x: point[0], y: point[1] };
-      graphData.nodes.push(newNodeRef);
-  };
-
+        const newNodeRef = { id: key.id, name: texto, x: point[0], y: point[1] };
+        graphData.nodes.push(newNodeRef);
+      }); 
+    } else {
+      alert("Ya existe un nodo con ese nombre");
+    }
+  }).catch(function(error) {
+    // Handle error
+  });
+ 
 });
 
 var startNode = null;
