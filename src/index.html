@@ -2,9 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>D3 Example</title>
+  <title>D3 Example</title>  
 </head>
 <body>
+  <script src="wasm_exec.js"></script>
+  <script>
+    if (!WebAssembly.instantiateStreaming) {
+      // polyfill
+      WebAssembly.instantiateStreaming = async (resp, importObject) => {
+        const source = await (await resp).arrayBuffer();
+        return await WebAssembly.instantiate(source, importObject);
+      };
+    }
+
+    const go = new Go();
+
+    let mod, inst;
+
+    WebAssembly.instantiateStreaming(fetch("lib.wasm"), go.importObject).then(
+      async result => {
+        mod = result.module;
+        inst = result.instance;
+        await go.run(inst);
+      }
+    );
+
+    function callToWasmFuncAdd() {
+      var inputField = document.querySelector('#inputField');
+      inputField.value = add(2,3);	  
+    }
+  </script>
+ 
+  <input id="inputField" name="result" type="text">
+  <button onClick="callToWasmFuncAdd();" id="addButton">Add</button>
+ 
   <h1>Ejemplo de D3</h1>
   <div id="mi-grafica"></div>
   <button id="exportar">Exportar</button>

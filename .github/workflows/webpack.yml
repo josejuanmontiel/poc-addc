@@ -20,6 +20,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.18'
+    - name: Build
+      run: GOARCH=wasm GOOS=js go build -o src/lib.wasm main.go
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
