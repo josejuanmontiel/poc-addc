@@ -6,6 +6,7 @@
     - Explicar funcionalidades de exportacion/importacion
 
 - [ ] Revisar los TODO internos
+  - Dixie export and sinc (formats)... revisar los "cientificos"
   - TODO Recuperar los enlaces desde la base de datos y añadirlas a graphData.links
   - TODO mejorar la iteracion para no salir hasta que se encuentre un texto que no este en la base de datos
   - TODO Almacenar el enlace en la base de datos
@@ -43,12 +44,14 @@
     - 
 
 - [ ] Cifrado
+    - https://github.com/morphy2k/wasm-pgp
     - https://github.com/mozilla/sops
 
 - [ ] Gorgina
     - https://youtu.be/lLkhC6Ehre4
     - Generative Adversarial Network in Go via Gorgonia 
         - https://github.com/LdDl/gan-go
+    - https://awesome-go.com/machine-learning
 
 - [ ] Graph data structures and algorithms for Golang 
     - https://github.com/starwander/goraph
