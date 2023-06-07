@@ -1,14 +1,62 @@
 import * as d3 from 'd3';
 import Dexie from 'dexie';
+import {importDB, exportDB, importInto, peakImportFile} from "dexie-export-import";
+import download from 'downloadjs';
 
-import { exportar, importar } from './auxiliar.js';
+import { findNodeIdByName, findNodeById, getPositionOfLinks } from './auxiliar.js';
 
-// TODO GENERALES
-// Revisar la exportacion porque no parece meter los links
-// Falta input de donde coger el fichero a importar
-
+// Declaramos la base de datos
 var db = new Dexie('addc');
-db.version(1).stores({nodos: '++id,name,x,y'});
+// Creamos las tablas
+db.version(2).stores({
+  nodos: '++id,name,x,y',
+  links:'++id,source,target'});
+
+// Mecanismos de importacion/exportacion de la bd via funciones de Dexie
+const dropZoneDiv = document.getElementById('dropzone');
+const exportLink = document.getElementById('exportLink');
+
+// Configure exportLink
+exportLink.onclick = async ()=>{
+  try {
+    const blob = await db.export({prettyJson: true, progressCallback});
+    download(blob, "dexie-export.json", "application/json");
+  } catch (error) {
+    console.error(''+error);
+  }
+};
+
+// Configure dropZoneDiv
+dropZoneDiv.ondragover = event => {
+  event.stopPropagation();
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'copy';
+};
+
+// Handle file drop:
+dropZoneDiv.ondrop = async ev => {
+  ev.stopPropagation();
+  ev.preventDefault();
+
+  // Pick the File from the drop event (a File is also a Blob):
+  const file = ev.dataTransfer.files[0];
+  try {
+    if (!file) throw new Error(`Only files can be dropped here`);
+    console.log("Importing " + file.name);
+    await db.delete();
+    db = await Dexie.import(file, {
+      progressCallback
+    });
+    console.log("Import complete");
+  } catch (error) {
+    console.error(''+error);
+  }
+}
+
+// Progress callback para indicar el progreso de la importacion/exportacion
+function progressCallback ({totalRows, completedRows}) {
+  console.log(`Progress: ${completedRows} of ${totalRows} rows completed`);
+}
 
 // Cambiar el comportamiento del botón derecho del mouse
 document.addEventListener('contextmenu', function(event) {
@@ -22,6 +70,7 @@ var svg = d3.select("#mi-grafica")
     .attr("width", window.innerWidth)
     .attr("height", window.innerHeight);
 
+// TODO Pendiente de eliminar
 // Datos del grafo dirigido (ejemplo)
 let graphData = {
   nodes: [],
@@ -58,13 +107,21 @@ db.nodos.each(function (nodo) {
 
     const newNodeRef = { id: nodo.id, name: nodo.name, x: nodo.x, y: nodo.y };
     graphData.nodes.push(newNodeRef);
-
   });
 
-// TODO Recuperar los enlaces desde la base de datos y añadirlas a graphData.links
+// Renderizar los links entre los nodos
+// TODO ... Se podrian pintar a la que se van pintando los nodos? Posiblemente no...
+var enrichedLinks = await getPositionOfLinks(db);
 
-
-
+await Promise.all (enrichedLinks.map (async link => {
+  const newLink = svg.append("line")
+    .attr("x1", link.startNode.x)
+    .attr("y1", link.startNode.y)
+    .attr("x2", link.endNode.x)
+    .attr("y2", link.endNode.y)
+    .attr("stroke-width", 2)
+    .attr("stroke", "black");
+}));
 
 // Agregamos un listener al SVG para capturar el evento click
 svg.on("click", function(event) {
@@ -79,13 +136,14 @@ svg.on("click", function(event) {
   var texto = "";
   var key = null;
 
-  // TODO mejorar la iteracion para no salir hasta que se encuentre un texto que no este en la base de datos
   texto = prompt("Idea?");
   var newItem = {name: texto, x: point[0], y: point[1]};
 
   // Busqueda basica de duplicados por nombre
   db.nodos.get({"name":texto}).then( function(nodos) {
     if (nodos === undefined) {
+
+      // Lo insertamos en la base de datos
       key = db.nodos.put(newItem).then(id => {
 
       // Creamos el nuevo nodo como un círculo
@@ -126,6 +184,7 @@ svg.on("click", function(event) {
 
 var startNode = null;
 
+// Funcion de creacion del link entre nodos (en dos tiempos)
 function createLink(event, d) {
   if (startNode === null) {
     // Si no hay un nodo de inicio previo, establece el nodo actual como el nodo de inicio
@@ -134,115 +193,61 @@ function createLink(event, d) {
     // Si hay un nodo de inicio previo, crea un enlace desde el nodo de inicio al nodo actual
     const endNode = d3.select(d);
     
-    const newLink = { source: startNode.id, target: endNode.id };
+    var x1=startNode.attr("cx");
+    var y1=startNode.attr("cy");
+    var x2=endNode.attr("cx");
+    var y2=endNode.attr("cy");
+    
+    // TODO Cambiar esta funcion para devovler en nodo y sacar de el el id???
+    const newLink = { source: findNodeIdByName(db, startNode.attr("id")), target: findNodeIdByName(db, endNode.attr("id")) };
+    db.links.put(newLink);
     graphData.links.push(newLink);
 
-    // TODO Almacenar el enlace en la base de datos
-
     // Dibuja el enlace como una línea entre los dos ideas
-    svg.append("line")
-      .attr("class", "link")
-      .attr("x1", startNode.attr("cx"))
-      .attr("y1", startNode.attr("cy"))
-      .attr("x2", endNode.attr("cx"))
-      .attr("y2", endNode.attr("cy"))
-      .attr("stroke", "black");
+    drawLineBetweenNodes(x1,y1,x2,y2);
 
     // Reinicia el nodo de inicio para permitir la creación de nuevos enlaces
     startNode = null;
   }
 }
 
-// TODO Drag nodes and store the new position in the graphData object
-
-// TODO Implement zooming and panning
-
 // Lincar al evento de teclado control + z
 document.addEventListener("keydown", function(event) {
   if (event.ctrlKey && event.key === "z") {
-    deshacer();
+    deshacerNodo();
   }
+  if (event.ctrlKey && event.key === "x") {
+    deshacerLink();
+  }  
 });
 
-// Funcion para eliminar el ultimo nodo añadido
-function deshacer(){
-  var item = graphData.nodes.pop();
-  db.nodos.delete(item.id);
-  // TODO Redibujar el grafo
-
+function drawLineBetweenNodes(x1, y1, x2, y2) {
+  svg.append("line")
+    .attr("class", "link")
+    .attr("x1", x1)
+    .attr("y1", y2)
+    .attr("x2", x2)
+    .attr("y2", y2)
+    .attr("stroke", "black");
 }
 
-// Manejador de clic en el botón de exportación
-document.getElementById('exportar').addEventListener('click', () => {
-  // Crea un objeto con el contenido del grafo para exportar
-  const exportData = {
-    nodes: graphData.nodes,
-    links: graphData.links
-  };
+// Funcion para eliminar el ultimo nodo añadido
+function deshacerNodo(){
+  var item = graphData.nodes.pop();
+  db.nodos.delete(item.id);
+}
 
-  // Convierte el objeto a una cadena JSON
-  const jsonData = JSON.stringify(exportData, null, 2);
-
-  // Crea un enlace de descarga
-  const downloadLink = document.createElement('a');
-  downloadLink.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonData);
-  downloadLink.download = 'graph_data.json';
-
-  // Simula un clic en el enlace para iniciar la descarga
-  downloadLink.click();
-});
-
-// Manejador de clic en el botón de cargar ideas
-document.getElementById('importar').addEventListener('click', () => {
-  const fileInput = document.getElementById('file-input');
-  const file = fileInput.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      console.log('Contenido del archivo:', event.target.result);
-      const contents = event.target.result;
-      const parsedData = JSON.parse(contents);
-
-      // Verificar que los datos cargados son válidos
-      if (parsedData && Array.isArray(parsedData.nodes) && Array.isArray(parsedData.links)) {
-        console.log('Datos cargados:', parsedData);
-
-        // Actualizar el grafo con los ideas cargados
-        // TODO Revisar el modelo de datos para ver si es necesario hacer alguna transformación
-        graphData.nodes = parsedData.nodes.map((node, index) => {
-          const newNode = {
-            ...node,
-            x: node.x,
-            y: node.y
-          };
-          console.log('Añadiendo nodo en posición', index, ':', newNode);
-          return newNode;
-        });
-        graphData.links = parsedData.links;
-
-        console.log('Grafo actualizado:', graphData);
-        updateGraphAndAnimate();
-      } else {
-        console.error('El archivo no contiene datos válidos de ideas.');
-      }
-    };
-
-    reader.readAsText(file);
-  }
-});
+// Funcion para eliminar el ultimo link añadido
+function deshacerLink(){
+  var item = graphData.links.pop();
+  db.links.delete(item.id);
+}
 
 // Manejador de clic en el botón de borrar el localStorage
 document.getElementById('clear-localstorage').addEventListener('click', () => {
   localStorage.removeItem('graphData');
   // elimina el contenido del indexDB
   db.nodos.clear();
+  db.links.clear();
   console.log('localStorage borrado');
-});
-
-// Manejador de clic en el botón de guardar en el localStorage
-document.getElementById('update-localstorage').addEventListener('click', () => {
-  localStorage.setItem('graphData', JSON.stringify(graphData));
-  console.log('Grafo guardado en localStorage');
 });

@@ -1,44 +1,41 @@
-// Exportemos el contenido de los ideas a un archivo JSON
-function exportar() {
-    var nodes = [];
-    nodesGroup.selectAll("g").each(function (d, i) {
-        var node = d3.select(this);
-        nodes.push({
-            id: i,
-            x: node.select("circle").attr("cx"),
-            y: node.select("circle").attr("cy"),
-            text: node.select("text").text()
-        });
+// Encuentra el id de un nodo por su nombre
+function findNodeIdByName(db, name) {
+    var id = null;
+    db.nodos.get({"name":name}).then( function(nodos) {
+        if (nodos === undefined) {
+            console.log("No se encontro el nodo");
+        } else {
+            id = nodos.id;
+        }
     });
-    console.log(JSON.stringify(nodes));
+    return id;
 }
-  
-// Importemos el contenido de los ideas desde un archivo JSON
-function importar() {
-    var nodes = JSON.parse(prompt("Ingrese el contenido del archivo JSON"));
-    nodesGroup.selectAll("g").remove();
-    nodes.forEach(function (node) {
-        const newNode = nodesGroup.append("g");
-        newNode.append("circle")
-            .attr("cx", node.x)
-            .attr("cy", node.y)
-            .attr("r", 20)
-            .attr("fill", "blue")
-            .on("mousedown", function (event) {
-                if (event.button === 2) {
-                    // Tu código para el evento de clic del botón izquierdo aquí
-                    createLink(event, this);
-                }
-            });
-        newNode.append("text")
-            .attr('x', node.x + 20)
-            .attr('y', node.y + 20)
-            .text(node.text)
-            .clone(true).lower()
-            .attr('fill', 'none')
-            .attr('stroke', 'white')
-            .attr('stroke-width', 3);
+
+// Encuentra el nodo por su id
+function findNodeById(db, id) {
+    db.nodos.get({"id":id}).then( function(nodo) {
+        if (nodo === undefined) {
+            console.log("No se encontro el nodo con id: " + id);
+            return nill;
+        } else {
+            return nodo;
+        }
     });
 }
 
-export { exportar, importar };
+// Encuentra las posiciones de inicio y fin de un link
+async function getPositionOfLinks(db) {
+  const links = await db.links.toArray();
+  
+  await Promise.all(links.map(async link => {
+    [link.startNode, link.endNode] = await Promise.all([
+      db.nodos.get(link.source),
+      db.nodos.get(link.target)
+    ]);
+  }));
+  
+  return links;
+}
+
+
+export { findNodeIdByName, findNodeById, getPositionOfLinks};

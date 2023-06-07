@@ -37,10 +37,15 @@
   <button onClick="callToWasmFuncAdd();" id="addButton">Add</button>
  
   <h1>Ejemplo de D3</h1>
+
   <div id="mi-grafica"></div>
-  <button id="exportar">Exportar</button>
-  <button id="importar">Importar</button>
+
+  <button id="exportLink">Export database</button>
+  <!-- TODO Añadimos color de fondo al div para mostrar la zona de arrastre -->
+  <div id="dropzone">
+    Drop dexie export JSON file here
+  </div>
   <button id="clear-localstorage">Limpiar storage</button>
-  <button id="update-localstorage">Actualizar  storage</button>
+  
 </body>
 </html>
