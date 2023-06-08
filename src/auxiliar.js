@@ -1,14 +1,18 @@
 // Encuentra el id de un nodo por su nombre
-function findNodeIdByName(db, name) {
-    var id = null;
-    db.nodos.get({"name":name}).then( function(nodos) {
-        if (nodos === undefined) {
-            console.log("No se encontro el nodo");
-        } else {
-            id = nodos.id;
-        }
-    });
-    return id;
+async function findNodeIdByName(db, name) {
+    try {
+      const nodos = await db.nodos.get({ "name": name });
+      if (nodos === undefined) {
+        console.log("No se encontró el nodo");
+        return null;
+      } else {
+        const id = nodos.id;
+        return id;
+      }
+    } catch (error) {
+      console.error("Error al buscar el nodo:", error);
+      return null;
+    }
 }
 
 // Encuentra el nodo por su id
