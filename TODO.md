@@ -6,11 +6,12 @@
     - Explicar funcionalidades de exportacion/importacion
 
 - [ ] Revisar los TODO internos
+  - REVISAR Creacion de links porque sino depuras mete nulls... algo de los await/promesas :(
   - TODO ¿Realmente seria necesario graphData con db?
   - TODO mejorar la iteracion para no salir hasta que se encuentre un texto que no este en la base de datos
   - TODO Drag nodes and store the new position in the graphData object
   - TODO Implement zooming and panning
-  - TODO Redibujar el grafo tras la importacion (por ejemplo)
+  - TODO Redibujar el grafo tras deshacer elementos
   - TODO Revisar el modelo de datos para ver si es necesario hacer alguna transformación
   - Revisar formatos de exportacion "cientificos"
 

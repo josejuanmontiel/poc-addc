@@ -1,5 +1,33 @@
 # poc-addc
 
+## Origen
+La primera idea relacionada con esto surge como una manera de organizar los pensamientos, donde se relacionan unos con otros en distintos niveles, e incluso los de niveles inferiores pueden llegar a olvidarse y los de niveles superiores a compartirse con otros. Una especie de representacion como la pelicula upside down.
+
+Para la parte de compartir, descarto la necesidad e una identidad unica y verificada, y me centro en la firma del contenido para que este no se pueda cambiar una vez compartido, esto hara que de una manera intrinseca se vaya asociando los contenidos a una identidad, lo que no quita que esa entidad real, pueda tener varia identidades virtuales con distintos elementos, incluso porque no contradictorios.
+
+El tema del la moneda, tambien paso por mi mente, con una especie de saldo inicial, pero termine pensando que la moneda debia reflejar valor en el mundo real, si yo te vendo x recibo un vale por x, que puedo cambiar ... en otro lugar por lo que el mercado dicte. Esto lleva a un sistema de gestion de transacciones complejo.
+
+Y basicamente estas tres ideas el la que dan origen a esta red unipersonal.
+
+Viendo como funciona nuestra memoria, entendi que la memoria es la base del conocimiento.
+
+Y los mapas metales una manera de representar esas conexiones de la memoria como parece que lo hace nuestro cerebro.
+
+Al final el ML es una especie de herramienta que realiza predicciones en base a entradas, porque no intentar usar esas herramientas con tus propios datos.
+
+Imagina que cuando fueras a una web te descargaras el catalogo y lo iteras con tus datos para descubrir lo que te interesa. Invirtamos el flujo de informacion para volver a tomar el control.
+
+Y es ahi, en la publicidad donde entra en juego la parte emocional de toma de decisiones. Y como intentar evitar el ruido.
+
+Y si somos capaces de evolucionar ese grafo de conocimiento unipersonal, compartiendo las partes que deseamos con los que deseemos de una manera P2P, y asi enriquecernos y asimilar el conocimiento de los que elijamos.
+
+Lo mismo asi podamos crear una red asincrona de conocimiento, que sea mas potente que cualquier otra red artificial que podamos entrenar.
+
+Y si esto sucede, podamos avanzar mucho mas rapido en el campo de la investigacion.
+
+Y quien sabe, quizas en el campo de la democracia y hacer un mundo mejor.
+
+
 ## Motivos
 
 Marcar el camino aprendizaje-> memoria->deducion->sesgos->ruido
