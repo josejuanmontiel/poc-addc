@@ -17,9 +17,9 @@ El tema del la moneda, también paso por mi mente. Pense que todos podríamos in
 
 Y básicamente estas ideas eran las que iban rondando en mi cabeza...
 
-...Ahora bien, el tiempo fue pasando y yo segui investigando, sobre como eramos y durante un tiempo me llamo la atencion la memoria. Por distintos motivos llegue al libro de Joshua Foer: Hazañas de la memoria que todos pueden alcanzar (Moonwalking with Einstein) y para que veas de que va, aqui te dejo una charla que dio en TEDx
+...Ahora bien, el tiempo fue pasando y yo segui investigando, sobre como eramos y durante un tiempo me llamo la atencion la memoria. Por distintos motivos llegue al libro de Joshua Foer: Hazañas de la memoria que todos pueden alcanzar (Moonwalking with Einstein) y para que veas de que va
 
-{% include link1.html id="U6PoUg7jXsA" %}
+[![aqui te dejo una charla que dio en TEDx](https://i.ytimg.com/vi/U6PoUg7jXsA/maxresdefault.jpg)](https://www.youtube.com/embed/U6PoUg7jXsA)
 
 El caso es que la memoria se puede ejercitar ¿y no es lo que haciamos de pequeños en el colegio? Por norma general, no, porque nos solia faltar un aspecto fundamental, ganas.
 
