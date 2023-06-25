@@ -19,7 +19,7 @@ Y básicamente estas ideas eran las que iban rondando en mi cabeza...
 
 ...Ahora bien, el tiempo fue pasando y yo segui investigando, sobre como eramos y durante un tiempo me llamo la atencion la memoria. Por distintos motivos llegue al libro de Joshua Foer: Hazañas de la memoria que todos pueden alcanzar (Moonwalking with Einstein) y para que veas de que va, aqui te dejo una charla que dio en TEDx
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/U6PoUg7jXsA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+{% include link1.html id="U6PoUg7jXsA" %}
 
 El caso es que la memoria se puede ejercitar ¿y no es lo que haciamos de pequeños en el colegio? Por norma general, no, porque nos solia faltar un aspecto fundamental, ganas.
 
